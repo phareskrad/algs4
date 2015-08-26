@@ -117,16 +117,17 @@ public class RadixSorts {
 
     Signing bonus. Do it in NL time in the worst case.
      */
+    //substring function make this function n^2
     private static String[] suffixes(String s) {
         int n = s.length();
         String[] suffiexs = new String[n];
 
         for (int i = 0; i < n; i++) {
-            suffiexs[i] = s.substring(i) + s.substring(n - i);
+            suffiexs[i] = s.substring(i) + s.substring(0, i);
         }
         return suffiexs;
     }
-
+    //explicitly sort the strings
     private static void sort(String[] a, int W) {
         int N = a.length;
         int R = 256;   // extend ASCII alphabet size
@@ -153,19 +154,53 @@ public class RadixSorts {
                 a[i] = aux[i];
         }
     }
+    //implicitly sort the circular suffixes, keep the sort order in a index array
+    private static void sortSuffixes(String s, int[] indices) {
+        int N = s.length();
+        int R = 256;
+        int[] aux = new int[N];
 
-    public static boolean pairCyclic(String[] a, int l) {
+        for (int d = N - 1; d >= 0; d--) {
+            int[] count = new int[R+1];
+
+            for (int i = 0; i < N; i++) {
+                count[s.charAt((d + indices[i]) % N) + 1]++;
+            }
+
+            for (int r = 0; r < R; r++) {
+                count[r + 1] += count[r];
+            }
+
+            for (int i = 0; i < N; i++) {
+                aux[count[s.charAt((d + indices[i]) % N)]++] = indices[i];
+            }
+
+            for (int i = 0; i < N; i++)
+                indices[i] = aux[i];
+        }
+    }
+
+    private static int[] initializeIndex(int n) {
+        int[] result = new int[n];
+        for (int i = 0; i < n; i++) {
+            result[i] = i;
+        }
+        return result;
+    }
+
+    public static boolean pairCyclic(String[] a) {
         int n = a.length;
 
         String[] fingerprint = new String[n];
 
         for (int i = 0; i < n; i++) {
-            String[] suffixes = suffixes(a[i]);
-            sort(suffixes, l);
-            fingerprint[i] = suffixes[0];
+            int[] indices = initializeIndex(a[i].length());
+            sortSuffixes(a[i], indices);
+            String fp = a[i].substring(indices[0]) + a[i].substring(0, indices[0]);
+            fingerprint[i] = fp;
         }
 
-        sort(fingerprint, l);
+        sort(fingerprint, n);
 
         for (int i = 0; i < n - 1; i++) {
             if (fingerprint[i] == fingerprint[i + 1]) return true;
