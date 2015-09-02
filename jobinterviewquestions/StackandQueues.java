@@ -183,6 +183,7 @@ public class StackandQueues {
         Node p = head;
         while (p != null) {
             Node copy = new Node();
+            copy.item = p.item;
             copy.next = p.next;
             p.next = copy;
             p = p.next.next;

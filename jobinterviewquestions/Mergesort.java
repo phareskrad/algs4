@@ -47,10 +47,15 @@ public class Mergesort {
      */
 
     private int merge(Comparable[] a, Comparable[] aux, int lo, int mid, int hi) {
+        for (int k = lo; k <= hi; k++) {
+            aux[k] = a[k];
+        }
+
         int k = lo;
         int i = lo;
         int j = mid + 1;
         int count = 0;
+
         while (k < hi) {
             if (i > mid) a[k++] = aux[j++];
             else if (j > hi) a[k++] = aux[i++];
@@ -65,10 +70,6 @@ public class Mergesort {
 
     public int countInversion(Comparable[] a) {
         Comparable[] aux = new Comparable[a.length];
-        for (int i = 0; i < a.length; i++) {
-            aux[i] = a[i];
-        }
-
         int count = 0;
 
         for (int sz = 1; sz < a.length; sz += sz) {
@@ -95,7 +96,7 @@ public class Mergesort {
         Node next;
     }
 
-    private void merge(Node lh, Node lt, Node rh, Node rt) {
+    private void merge(Node lh, Node rh) {
         Node left = lh;
         Node right = rh;
 
@@ -130,7 +131,7 @@ public class Mergesort {
         }
     }
 
-    public void shuffle(Node head, Node tail, int N) {
+    public void shuffle(Node head, int N) {
         if (N == 1) return;
 
         int k = 1;
@@ -141,9 +142,9 @@ public class Mergesort {
         }
         Node rh = mid.next;
         mid.next = null;
-        shuffle(head, mid, N / 2);
-        shuffle(rh, tail, N - N / 2);
-        merge(head, mid, rh, tail);
+        shuffle(head, N / 2);
+        shuffle(rh, N - N / 2);
+        merge(head, rh);
     }
 
 

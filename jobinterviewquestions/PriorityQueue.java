@@ -18,48 +18,50 @@ public class PriorityQueue {
     class MediaHeap {
         private MaxPQ<Integer> left;
         private MinPQ<Integer> right;
-        private int median;
+        private int L;
+        private int R;
 
         MediaHeap() {
-           median = 0;
             left = new MaxPQ<Integer>();
             right = new MinPQ<Integer>();
         }
 
-        public int findMedian() {
-            return median;
+        public double findMedian() {
+            int L = left.size();
+            int R = right.size();
+            if (L == R)
+                return ((double)left.max() + (double)right.min()) / 2;
+            else if (L > R)
+                return left.max();
+            else
+                return right.min();
         }
 
         public void insert(int key) {
+            double median = findMedian();
+            int L = left.size();
+            int R = right.size();
             if (key <= median) {
                 left.insert(key);
-                if (left.size() - right.size() > 1) {
-                    int tmp = left.delMax();
-                    left.insert(median);
-                    median = tmp;
-                }
+                if (L - R > 1)
+                    right.insert(left.delMax());
             }
             else {
                 right.insert(key);
-                if (right.size() - left.size() > 1) {
-                    int tmp = right.delMin();
-                    right.insert(median);
-                    median = tmp;
-                }
+                if (R - L > 1)
+                    left.insert(right.delMin());
             }
         }
 
-        public int removeMedian() {
-            int tmp = median;
-            int l = left.size();
-            int m = right.size();
-            if (l > m) {
-                median = left.delMax();
+        public void removeMedian() {
+            int L = left.size();
+            int R = right.size();
+            if (L > R) {
+                left.delMax();
             }
             else {
-                median = right.delMin();
+                right.delMin();
             }
-            return tmp;
         }
 
     }
@@ -75,7 +77,7 @@ public class PriorityQueue {
 
     /*
     generate random number from 0 - N, sample() just return that number
-    when delete random, exchange with last, delete last, then compare with parent to decide whether swim of sink
+    when delete random, exchange with last, delete last, then compare with parent and children to decide whether swim or sink
      */
 
     /*
